@@ -1,0 +1,9 @@
+led.o: src\LED.c
+led.o: C:\Keil\ARM\RV31\Inc\RTL.h
+led.o: C:\Keil\ARM\Inc\NXP\LPC17xx\LPC17xx.H
+led.o: C:\Keil\ARM\CMSIS\Include\core_cm3.h
+led.o: C:\Keil\ARM\RV31\Inc\stdint.h
+led.o: C:\Keil\ARM\CMSIS\Include\core_cmInstr.h
+led.o: C:\Keil\ARM\CMSIS\Include\core_cmFunc.h
+led.o: C:\Keil\ARM\Inc\NXP\LPC17xx\system_LPC17xx.h
+led.o: src\LED.h

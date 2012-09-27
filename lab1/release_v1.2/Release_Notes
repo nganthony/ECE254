@@ -1,0 +1,10 @@
+v1.2 2012/09/26
+Introduced $(LDLIBS) in mqueue/Makefile to move -l option to the end.
+Added rtx_demo directory. 
+
+
+v1.1 2012/09/24
+Removed CVS subdirectories.
+Updated mqueue/point.c file.
+Updated mqueue/point.h file.
+

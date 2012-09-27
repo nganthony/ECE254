@@ -1,0 +1,23 @@
+*** Creating Trace Output File 'rtx_demo.tra' Ok.
+### Preparing for ADS-LD.
+### Creating ADS-LD Command Line
+### List of Objects: adding '"startup_lpc17xx.o"'
+### List of Objects: adding '"system_lpc17xx.o"'
+### List of Objects: adding '"rtx_conf_cm.o"'
+### List of Objects: adding '"glcd_spi_lpc1700.o"'
+### List of Objects: adding '"led.o"'
+### List of Objects: adding '"main.o"'
+### ADS-LD Command completed:
+--cpu Cortex-M3 "startup_lpc17xx.o" "system_lpc17xx.o" "rtx_conf_cm.o" "glcd_spi_lpc1700.o" "led.o" "main.o" C:\Keil\ARM\RV31\Lib\RTX_CM3.LIB --ro-base 0x00000000 --entry 0x00000000 --rw-base 0x10000000 --entry Reset_Handler --first __Vectors --strict --summary_stderr --info summarysizes --map --xref --callgraph --symbols 
+--info sizes --info totals --info unused --info veneers 
+ --list ".\rtx_demo.map" -o rtx_demo.axf### Preparing Environment (PrepEnvAds)
+### ADS-LD Output File: 'rtx_demo.axf'
+### ADS-LD Command File: 'rtx_demo.lnp'
+### Checking for dirty Components...
+### Creating CmdFile 'rtx_demo.lnp', Handle=0x0000067C
+### Writing '.lnp' file
+### ADS-LD Command file 'rtx_demo.lnp' is ready.
+### ADS-LD: About to start ADS-LD Thread.
+### ADS-LD: executed with 0 errors
+### Updating obj list
+### LDADS_file() completed.
