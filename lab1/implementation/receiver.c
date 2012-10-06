@@ -61,7 +61,6 @@ int main(void)
 		}
 	};
 
-
 	if (mq_close(qdes) == -1) {
 		perror("mq_close() failed");
 		exit(2);
