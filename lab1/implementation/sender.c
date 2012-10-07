@@ -11,7 +11,7 @@
 #include <mqueue.h>
 #include <sys/stat.h>
 #include <signal.h>
-#include <time.h>
+#include <sys/time.h>
 #include "common.h"
 #include "point.h"
 
@@ -19,12 +19,46 @@
 int queue_count = 0;
 int queue_size = 0;
 
+//Number of integers to send from producer to consumer
+int number_of_integers = 0;
+
+//Number of integers consumed by the consumer
+int consumed_count = 0;
+
 //State of the consumer
 bool consumer_running = true;
+
+//Time before fork;
+struct timeval time_before_fork;
+
+//Time before first item is produced;
+struct timeval time_before_first_item;
+
+//Time after all items have been consumed
+struct timeval time_after_all_consumed;
 
 void sig_handler(int sig){
 	consumer_running = false;
 	exit(1);
+}
+
+/**
+ * Calculates the time difference between two time instances
+ */
+double calculate_elapsed_time(struct timeval *t1, struct timeval *t2)
+{
+	//Elapsed time between the two time instances
+	double elapsed_time = 0;
+
+	//Obtain seconds
+	double seconds = t2->tv_sec - t1->tv_sec;
+
+	//Obtain microseconds
+	double microseconds = t2->tv_usec - t1->tv_usec;
+
+	elapsed_time = seconds + microseconds*(1e-6);
+
+	return elapsed_time;
 }
 
 int spawn_consumer()
@@ -58,6 +92,7 @@ int spawn_consumer()
 			
 			while(consumer_running)
 			{
+				//Integer received in the mailbox from producer
 				int integer_received;
 				struct timespec ts = {time(0) + 5, 0};
 				if(!consumer_running) break;
@@ -65,8 +100,26 @@ int spawn_consumer()
 					sizeof(int), 0, &ts) == -1) {
 					perror("mq_timedreceive() failed");
 					printf("Type Ctrl-C and wait for 5 seconds to terminate. \n");
-				} else {
-					printf("Received a random integer: %d \n", integer_received);
+				} 
+				else {
+					printf("%d is consumed \n", integer_received);
+
+					//Increment the number of integers consumed
+					consumed_count++;
+					
+					if(consumed_count == number_of_integers)
+					{
+						//Obtain time after all integers have been consumed
+						gettimeofday(&time_after_all_consumed, NULL);
+
+						//Print the initialization time
+						printf("Time to initialize system: %f \n", 
+							calculate_elapsed_time(&time_before_fork, &time_before_first_item));
+
+						//Print the time needed to transmit data from producer to consumer
+						printf("Time to transmit data: %f \n", 
+							calculate_elapsed_time(&time_before_first_item, &time_after_all_consumed));
+					}
 				}
 
 			}
@@ -76,24 +129,12 @@ int spawn_consumer()
 }	
 
 int main(int argc, char *argv[])
-{
-	//printf("ARGC: %d", argc);
+{	
+	//Set number of integers to produce to argument 1
+	number_of_integers = atoi(argv[1]);
 
-	//printf("FIRST ARGUMENT: %d", arg1);
-	//printf("SECOND ARG: %d", arg2);
-	
-	if(argc == 0){
-		printf("FATAL ERROR NO ARGS DETECTED.. EXITING");
-		exit(1);
-	}
-	
-	int arg1 = atoi(argv[1]);
-	int arg2 = atoi(argv[2]);
-
-
-	//Number of integers to send to consumer
-	int number_of_integers = arg1;
-	queue_size = arg2;
+	//Set queue_size to argument 2
+	queue_size = atoi(argv[2]);
 
 	mqd_t qdes;
 	char  quit = '\0';
@@ -118,6 +159,9 @@ int main(int argc, char *argv[])
 	printf("Press a key to send a random point.\n");
 	getchar();
 
+	//Obtain time before fork
+	gettimeofday(&time_before_fork, NULL);
+
 	//Generate the specified number of random integers and send to consumer
 	int i = 0;
 	for(i = 0; i < number_of_integers; i++)
@@ -131,13 +175,18 @@ int main(int argc, char *argv[])
 		else
 		{
 			//Spawn the consumer once there is atleast one item in the queue
-			if(i == 1)
+			if(i == 0)
+			{
+				//Obtain time before first item was produced
+				gettimeofday(&time_before_first_item, NULL);
+
 				spawn_consumer();
+			}
 
 			queue_count++;
 		}
 
-		printf("Sending a random integer: %d \n", random_number);
+		//printf("Sending a random integer: %d \n", random_number);
 		//quit = getchar();
 	}
 
